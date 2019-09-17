@@ -1,28 +1,38 @@
-import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
+import 'package:ponyvie/blocs/favorite_bloc.dart';
 import 'package:ponyvie/blocs/movies_bloc.dart';
 import 'package:ponyvie/models/item_model.dart';
 import 'package:ponyvie/ui/movie_detail.dart';
 
-class MovieList extends StatefulWidget{
+class MovieList extends StatefulWidget {
+  MovieList({
+    Key key,
+  }) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return MovieListState();
   }
-
 }
-class MovieListState extends State<MovieList> {
-  MoviesBloc bloc;
-  @override
 
-  void initState(){
+class MovieListState extends State<MovieList> {
+  FavoriteBloc favoriteBloc;
+  MoviesBloc bloc;
+
+  @override
+  void initState() {
     bloc = MoviesBloc();
-    super.initState();
+
+    favoriteBloc = FavoriteBloc.getInstance();
+
+    
     bloc.fetchAllMovies();
+    super.initState();
   }
 
   @override
-  void dispose(){
+  void dispose() {
+    favoriteBloc.dispose();
     bloc.dispose();
     super.dispose();
   }
@@ -30,63 +40,50 @@ class MovieListState extends State<MovieList> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: bloc.allMovies,
-        builder: (context, AsyncSnapshot<ItemModel> snapshot) {
-          if (snapshot.hasData) {
-            return buildList(snapshot);
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          return Center(child: CircularProgressIndicator());
-        },
-      );
+      stream: bloc.allMovies,
+      builder: (context, AsyncSnapshot<List<MovieModel>> snapshot) {
+        if (snapshot.hasData) {
+          return buildList(snapshot);
+        } else if (snapshot.hasError) {
+          return Text(snapshot.error.toString());
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
   }
 
-  Widget buildList(AsyncSnapshot<ItemModel> snapshot) {
+  Widget buildList(AsyncSnapshot<List<MovieModel>> snapshot) {
     return GridView.builder(
-        itemCount: snapshot.data.results.length,
+        itemCount: snapshot.data.length,
         gridDelegate:
-        new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
           return Container(
             decoration: BoxDecoration(
-              border: Border.all(width: 1.0),
-              borderRadius: BorderRadius.circular(1.0)
-            ),
+                border: Border.all(width: 1.0),
+                borderRadius: BorderRadius.circular(1.0)),
             child: GridTile(
-            child: InkResponse(
-              enableFeedback: true,
-              child: Image.network(
-                'https://image.tmdb.org/t/p/w185${snapshot.data
-                    .results[index].posterPath}',
-                fit: BoxFit.cover,
+              child: InkResponse(
+                enableFeedback: true,
+                child: Image.network(
+                  'https://image.tmdb.org/t/p/w185${snapshot.data[index].posterPath}',
+                  fit: BoxFit.cover,
+                ),
+                onTap: () => openDetailpage(snapshot.data, index),
               ),
-              onTap: () => openDetailpage(snapshot.data, index),
             ),
-          ),
           );
         });
   }
 
-  openDetailpage(ItemModel data, int index){
-    final movie = data.results[index];
+  openDetailpage(List<MovieModel> data, int index) {
+    final movie = data[index];
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) {
-         return BlocProvider(
-          blocs: [
-        Bloc((i) => MoviesBloc()),
-      ],
-          child: MovieDetail(
-            title: movie.title,
-            posterUrl: movie.backdropPath,
-            description: movie.overview,
-            releaseDate: movie.releasDate,
-            voteAverage: movie.voteAverage.toString(),
-            movieId: movie.id,
-          ),
-        );
-      }),
+      MaterialPageRoute(
+          builder: (context) => MovieDetail(
+                movieModel: movie,
+              )),
     );
   }
 }

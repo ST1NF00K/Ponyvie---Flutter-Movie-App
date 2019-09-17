@@ -15,6 +15,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.2"
+  bloc_provider:
+    dependency: "direct main"
+    description:
+      name: bloc_provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.2+1"
   boolean_selector:
     dependency: transitive
     description:

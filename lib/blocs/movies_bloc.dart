@@ -5,11 +5,11 @@ import 'package:rxdart/rxdart.dart';
 
 class MoviesBloc extends BlocBase{
   final _repository = Repository();
-  final _moviesFetcher = PublishSubject<ItemModel>();
-  Observable<ItemModel> get allMovies => _moviesFetcher.stream;
+  final _moviesFetcher = PublishSubject<List<MovieModel>>();
+  Observable<List<MovieModel>> get allMovies => _moviesFetcher.stream;
 
   fetchAllMovies() async{
-    ItemModel itemModel = await _repository.fetchAllMovies();
+    List<MovieModel> itemModel = await _repository.fetchAllMovies();
     _moviesFetcher.sink.add(itemModel);
   }
 

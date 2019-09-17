@@ -1,68 +1,42 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:ponyvie/blocs/favorite_bloc.dart';
 import 'package:ponyvie/blocs/movie_detail_bloc.dart';
+import 'package:ponyvie/models/item_model.dart';
 import 'package:ponyvie/models/trailer_model.dart';
 
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 
 class MovieDetail extends StatefulWidget {
-  final posterUrl;
-  final description;
-  final releaseDate;
-  final String title;
-  final String voteAverage;
-  final int movieId;
+  final MovieModel movieModel;
 
-  MovieDetail({
-    this.title,
-    this.posterUrl,
-    this.description,
-    this.releaseDate,
-    this.voteAverage,
-    this.movieId,
-  });
+  MovieDetail({this.movieModel});
 
   @override
   State<StatefulWidget> createState() {
-    return MovieDetailState(
-      title: title,
-      posterUrl: posterUrl,
-      description: description,
-      releaseDate: releaseDate,
-      voteAverage: voteAverage,
-      movieId: movieId,
-    );
+    return MovieDetailState();
   }
 }
 
 class MovieDetailState extends State<MovieDetail> {
-  final posterUrl;
-  final description;
-  final releaseDate;
-  final String title;
-  final String voteAverage;
-  final int movieId;
-
-  MovieDetailBloc bloc;
-
-  MovieDetailState({
-    this.title,
-    this.posterUrl,
-    this.description,
-    this.releaseDate,
-    this.voteAverage,
-    this.movieId,
-  });
+  MovieDetailBloc _movieDetailBloc;
+  FavoriteBloc _favoriteBloc;
+  StreamSubscription _subscription;
 
   @override
-  void didChangeDependencies() {
-    bloc = MovieDetailBloc();
-    bloc.fetchTrailersById(movieId);
-    super.didChangeDependencies();
+  void initState() {
+    _movieDetailBloc = MovieDetailBloc(widget.movieModel);
+    _favoriteBloc = FavoriteBloc.getInstance();
+    _subscription =  _favoriteBloc.items.listen(_movieDetailBloc.favoritesEvent);
+
+    super.initState();
   }
 
   @override
   void dispose() {
-    bloc.dispose();
+    _subscription.cancel();
+    _movieDetailBloc.dispose();
     super.dispose();
   }
 
@@ -87,12 +61,12 @@ class MovieDetailState extends State<MovieDetail> {
                         //opacity: top == 80.0 ? 1.0 : 0.0,
                         opacity: 1.0,
                         child: Text(
-                          title,
+                          widget.movieModel.title,
                           maxLines: 2,
                           style: TextStyle(fontSize: 16.0),
                         )),
                     background: Image.network(
-                      "https://image.tmdb.org/t/p/w500$posterUrl",
+                      "https://image.tmdb.org/t/p/w500${widget.movieModel.posterPath}",
                       fit: BoxFit.cover,
                     )),
               ),
@@ -114,7 +88,7 @@ class MovieDetailState extends State<MovieDetail> {
                       margin: EdgeInsets.only(left: 1.0, right: 1.0),
                     ),
                     Text(
-                      voteAverage,
+                      "${widget.movieModel.voteAverage}",
                       style: TextStyle(
                         fontSize: 18.0,
                       ),
@@ -123,16 +97,39 @@ class MovieDetailState extends State<MovieDetail> {
                       margin: EdgeInsets.only(left: 10.0, right: 10.0),
                     ),
                     Text(
-                      releaseDate,
+                      widget.movieModel.releasDate,
                       style: TextStyle(
                         fontSize: 18.0,
                       ),
                     ),
+                    Container(
+                      margin: EdgeInsets.only(left: 10.0, right: 10.0),
+                    ),
+                    StreamBuilder(
+                        stream: _movieDetailBloc.isFavorite,
+                        initialData: false,
+                        builder: (context, AsyncSnapshot<bool> snapshot) {
+                          return snapshot.hasData && snapshot.data
+                              ? IconButton(
+                                  icon: Icon(Icons.star),
+                                  onPressed: () {
+                                    _favoriteBloc.remove(widget.movieModel);
+                                  },
+                                )
+                              : IconButton(
+                                  icon: Icon(Icons.star_border),
+                                  onPressed: () {
+                                    _favoriteBloc.add(widget.movieModel);
+                                  },
+                                );
+                        }),
                   ],
                 ),
                 Container(margin: EdgeInsets.only(top: 8.0, bottom: 8.0)),
                 Text(
-                  description,
+                  '',
+
+                  /// widget.movieModel.    description,
                   style: TextStyle(
                     fontSize: 16.0,
                   ),
@@ -147,24 +144,13 @@ class MovieDetailState extends State<MovieDetail> {
                 ),
                 Container(margin: EdgeInsets.only(top: 8.0, bottom: 8.0)),
                 StreamBuilder(
-                  stream: bloc.movieTrailers,
-                  builder:
-                      (context, AsyncSnapshot<Future<TrailerModel>> snapshot) {
+                  stream: _movieDetailBloc.movieTrailers,
+                  builder: (context, AsyncSnapshot<TrailerModel> snapshot) {
                     if (snapshot.hasData) {
-                      return FutureBuilder(
-                        future: snapshot.data,
-                        builder: (context,
-                            AsyncSnapshot<TrailerModel> itemSnapShot) {
-                          if (itemSnapShot.hasData) {
-                            if (itemSnapShot.data.results.length > 0)
-                              return trailerLayout(itemSnapShot.data);
-                            else
-                              return noTrailer(itemSnapShot.data);
-                          } else {
-                            return Center(child: CircularProgressIndicator());
-                          }
-                        },
-                      );
+                      if (snapshot.data.results.length > 0)
+                        return trailerLayout(snapshot.data);
+                      else
+                        return noTrailer(snapshot.data);
                     } else {
                       return Center(child: CircularProgressIndicator());
                     }

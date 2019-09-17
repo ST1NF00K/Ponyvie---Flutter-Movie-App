@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ponyvie/screens/favorites_screen.dart';
 import 'package:ponyvie/screens/popular_movies_screen.dart';
-
-import 'popular_movies_list.dart';
 
 class Item extends StatefulWidget {
 
@@ -36,10 +35,10 @@ class _ItemState extends State<Item> {
           MaterialPageRoute(builder: (context) => Container()),
         );
         break;
-      case 2:
+         case 2:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PopularMoviesList()),
+          MaterialPageRoute(builder: (context) => FavoritesScreen()),
         );
         break;
       default:

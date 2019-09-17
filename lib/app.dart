@@ -1,7 +1,8 @@
+import 'dart:developer';
+
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
-import 'package:ponyvie/ui/popular_movies_list.dart';
-
+import 'screens/favorites_screen.dart';
 import 'screens/popular_movies_screen.dart';
 
 class Home extends StatefulWidget {
@@ -15,7 +16,7 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    pages = [PopularMoviesScreen(), Container(color: Colors.black12,), Container()];
+    pages = [PopularMoviesScreen(), Container(color: Colors.black12,), FavoritesScreen()];
     super.initState();
   }
 
@@ -35,6 +36,7 @@ class _HomeState extends State<Home> {
       ),
       body: pages[index],
       bottomNavigationBar: FancyBottomNavigation(
+
         circleColor: Theme.of(context).primaryColor,
         activeIconColor: Theme.of(context).accentColor,
         tabs: [
@@ -42,7 +44,9 @@ class _HomeState extends State<Home> {
           TabData(iconData: Icons.filter_list, title: "Genres"),
           TabData(iconData: Icons.star, title: "Favorites")
         ],
+
         onTabChangedListener: (position) {
+          log("POSITION $position");
           setState(() {
             index = position;
           });

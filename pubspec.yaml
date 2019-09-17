@@ -17,6 +17,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  bloc_provider: ^0.6.2+1
   dio: ^2.1.16
   fancy_bottom_navigation: ^0.3.2
   bloc_pattern: ^2.3.2

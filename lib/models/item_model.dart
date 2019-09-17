@@ -1,36 +1,34 @@
-class ItemModel{
+class ApiResponse {
   int _page;
   int _totalResults;
   int _totalPages;
-  List<_Result> _results = [];
+  List<MovieModel> _results = [];
 
-  ItemModel.fromJSON(Map<String, dynamic> parsedJson) {
+  ApiResponse.fromJSON(Map<String, dynamic> parsedJson) {
     print(parsedJson['results'].length);
     _page = parsedJson['page'];
     _totalPages = parsedJson['total_pages'];
     _totalResults = parsedJson['total_results'];
-    List<_Result> temp = [];
+    List<MovieModel> temp = [];
 
-    for(int i=0; i< parsedJson['results'].length; i++){
-      _Result result = _Result(parsedJson['results'][i]);
+    for (int i = 0; i < parsedJson['results'].length; i++) {
+      MovieModel result = MovieModel(parsedJson['results'][i]);
       temp.add(result);
     }
 
     _results = temp;
   }
 
-  List<_Result> get results => _results;
+  List<MovieModel> get results => _results;
 
   int get totalPages => _totalPages;
 
   int get totalResults => _totalResults;
 
   int get page => _page;
-
 }
 
-
-class _Result {
+class MovieModel {
   int _voteCount;
   int _id;
   bool _video;
@@ -46,7 +44,7 @@ class _Result {
   String _overview;
   String _releaseDate;
 
-  _Result(result) {
+  MovieModel(result) {
     _voteCount = result['vote_count'];
     _id = result['id'];
     _video = result['video'];
@@ -57,7 +55,7 @@ class _Result {
     _originalLanguage = result['original_language'];
     _originalTitle = result['original_title'];
 
-    for(int i=0; i< result['genre_ids'].length; i++){
+    for (int i = 0; i < result['genre_ids'].length; i++) {
       _genreIds.add(result['genre_ids'][i]);
     }
 
@@ -67,7 +65,7 @@ class _Result {
     _releaseDate = result['release_date'];
   }
 
-  String get releasDate =>_releaseDate;
+  String get releasDate => _releaseDate;
 
   String get overview => _overview;
 
@@ -94,4 +92,10 @@ class _Result {
   int get id => _id;
 
   int get voteCount => _voteCount;
+
+
+  bool operator ==(other) => other.id == id;
+
+  int get hashCode =>
+      super.hashCode ^ id.hashCode ^ video.hashCode ^ posterPath.hashCode;
 }
