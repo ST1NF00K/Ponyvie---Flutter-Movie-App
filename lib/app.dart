@@ -16,13 +16,7 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    pages = [
-      PopularMoviesScreen(),
-      Container(
-        color: Colors.black12,
-      ),
-      FavoritesScreen()
-    ];
+    pages = [PopularMoviesScreen(), Container(color: Colors.black12,), FavoritesScreen()];
     super.initState();
   }
 
@@ -42,15 +36,15 @@ class _HomeState extends State<Home> {
       ),
       body: pages[index],
       bottomNavigationBar: FancyBottomNavigation(
+
         circleColor: Theme.of(context).primaryColor,
         activeIconColor: Theme.of(context).accentColor,
         tabs: [
           TabData(iconData: Icons.home, title: "Home"),
           TabData(iconData: Icons.filter_list, title: "Genres"),
-          TabData(iconData: Icons.star, title: "Favorites"),
-          TabData(iconData: Icons.ac_unit, title: "1"),
-          TabData(iconData: Icons.dangerous, title: "2")
+          TabData(iconData: Icons.star, title: "Favorites")
         ],
+
         onTabChangedListener: (position) {
           log("POSITION $position");
           setState(() {
@@ -62,17 +56,18 @@ class _HomeState extends State<Home> {
   }
 }
 
-// bottomNavigationBar: FancyBottomNavigation(
-//   circleColor: Theme.of(context).primaryColor,
-//   activeIconColor: Theme.of(context).accentColor,
-//   tabs: [
-//     TabData(iconData: Icons.home, title: "Home"),
-//     TabData(iconData: Icons.filter_list, title: "Genres"),
-//     TabData(iconData: Icons.star, title: "Favorites")
-//   ],
-//   onTabChangedListener: (position) {
-//     setState(() {
-//       index = position;
-//     });
-//   },
-// ),
+
+      // bottomNavigationBar: FancyBottomNavigation(
+      //   circleColor: Theme.of(context).primaryColor,
+      //   activeIconColor: Theme.of(context).accentColor,
+      //   tabs: [
+      //     TabData(iconData: Icons.home, title: "Home"),
+      //     TabData(iconData: Icons.filter_list, title: "Genres"),
+      //     TabData(iconData: Icons.star, title: "Favorites")
+      //   ],
+      //   onTabChangedListener: (position) {
+      //     setState(() {
+      //       index = position;
+      //     });
+      //   },
+      // ),
