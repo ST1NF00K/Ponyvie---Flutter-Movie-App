@@ -10,6 +10,6 @@ class Theme2 {
         accentColorBrightness: Brightness.dark,
         backgroundColor: Colors.purple[900],
         buttonColor: Colors.pink[400],
-        bottomAppBarColor: Colors.black54);
+        bottomAppBarColor: Colors.blue);
   }
 }
