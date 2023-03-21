@@ -18,11 +18,11 @@ environment:
 
 dependencies:
   bloc_provider: ^0.6.2+1
-  dio: ^2.1.16
+  dio: ">=2.1.16 <6.0.0"
   fancy_bottom_navigation: ^0.3.2
   bloc_pattern: ^2.3.2
   shifting_tabbar: ^0.3.1
-  http: ^0.12.0+2
+  http: ">=0.12.0+2 <0.14.0"
   flutter_custom_tabs: ^0.6.0
   rxdart: ^0.22.2
   flutter:
